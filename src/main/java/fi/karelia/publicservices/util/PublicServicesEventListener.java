@@ -5,7 +5,7 @@
  */
 package fi.karelia.publicservices.util;
 
-import fi.karelia.publicservices.data.DataPuller;
+import fi.karelia.publicservices.data.DataScheduler;
 import org.glassfish.jersey.server.monitoring.ApplicationEvent;
 import org.glassfish.jersey.server.monitoring.ApplicationEventListener;
 import org.glassfish.jersey.server.monitoring.RequestEvent;
@@ -18,16 +18,14 @@ import org.glassfish.jersey.server.monitoring.RequestEventListener;
 public class PublicServicesEventListener implements ApplicationEventListener {
 
     private volatile int requestCount = 0;
-    private DataPuller puller;
 
     @Override
     public void onEvent(ApplicationEvent ae) {
         switch (ae.getType()) {
             case INITIALIZATION_FINISHED:
                 System.out.println("Application " + ae.getResourceConfig().getApplicationName() + " was initialized.");
-                // Start data pulling
-                puller = new DataPuller();
-                puller.pull();
+                // Start the data scheduler
+                DataScheduler.getInstance().initialize();
                 break;
             case DESTROY_FINISHED:
                 System.out.println("Application " + ae.getResourceConfig().getApplicationName() + " destroyed.");
