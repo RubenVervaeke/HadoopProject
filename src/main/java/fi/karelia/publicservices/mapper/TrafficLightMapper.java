@@ -28,7 +28,7 @@ public class TrafficLightMapper extends Mapper<LongWritable, Text, Text, Text> {
         try {
             String[] pair = value.toString().split(",");
             tlBLL.add(new TrafficLight(Integer.parseInt(pair[0]), pair[1]));
-        } catch (ApplicationException | DBException | NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             Logger.getLogger(TrafficLightMapper.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
