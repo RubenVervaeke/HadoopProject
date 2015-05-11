@@ -19,12 +19,12 @@ public class TrafficLightBLL {
 
     private TrafficLightDAO tlDAO;
 
-    public TrafficLight add(TrafficLight tl) throws ApplicationException, DBException {
+    public TrafficLight add(TrafficLight tl) {
         tlDAO = new TrafficLightDAO();
         // Check if trafficlight already exists
-        if (tlDAO.findById(tl.getId()) != null) {
-            throw new ApplicationException("Id already exists for id: " + tl.getId());
-        }
+//        if (tlDAO.findById(tl.getId()) != null) {
+//            throw new ApplicationException("Id already exists for id: " + tl.getId());
+//        }
         return tlDAO.add(tl);
     }
 
