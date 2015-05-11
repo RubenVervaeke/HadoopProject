@@ -10,16 +10,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Ruben
+ * @author hadoop
  */
 @XmlRootElement
 public class TrafficLight implements Serializable {
-    
+
     private int id;
     private String value;
-    
-    public TrafficLight() {}
-    
+
+    public TrafficLight() {
+    }
+
     public TrafficLight(int id, String value) {
         this.id = id;
         this.value = value;
@@ -52,6 +53,5 @@ public class TrafficLight implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
-    
-    
+
 }
