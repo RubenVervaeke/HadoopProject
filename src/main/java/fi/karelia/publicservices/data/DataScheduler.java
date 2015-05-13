@@ -18,6 +18,7 @@ public class DataScheduler {
     private static volatile DataScheduler dataScheduler = null;
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20);
+    // private final Runnable mainTask;
     
     private Map<String, Long> modificationTimestamps;
     
@@ -36,5 +37,7 @@ public class DataScheduler {
     
     public void initialize() {
         
-    }
+        // Start the main task to pull all metadata from xml config files
+        
+    }   
 }
