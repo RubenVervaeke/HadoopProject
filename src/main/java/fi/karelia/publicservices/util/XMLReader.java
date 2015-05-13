@@ -4,6 +4,7 @@
  */
 package fi.karelia.publicservices.util;
 
+import fi.karelia.publicservices.data.domain.City;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -17,6 +18,22 @@ import java.io.File;
  * @author Jonas
  */
 public class XMLReader {
+
+    private static volatile XMLReader reader = null;
+
+    private XMLReader() {
+    }
+
+    public static XMLReader getInstance() {
+        if (reader == null) {
+            synchronized (XMLReader.class) {
+                if (reader == null) {
+                    reader = new XMLReader();
+                }
+            }
+        }
+        return reader;
+    }
     //public static void main(String argv[]) {
 //        try {
 //            File fXmlFile = new File("/Users/Jonas/Dropbox/KATHO/Derde Jaar/FINLAND/Thesis/XML files/cities.xml");
@@ -46,22 +63,19 @@ public class XMLReader {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        
+
 //        try{
 //            
 //            
 //        } catch(Exception e){
 //            
 //        }
-   // }
-    
-    public String[] getCityFiles()
-    {
-        
+    // }
+    public String[] getCityFiles() {
         return new String[10];
     }
-    
-    public City getCity(String pFileName){
+
+    public City getCity(String pFileName) {
         return new City();
     }
 }

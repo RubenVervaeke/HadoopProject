@@ -11,6 +11,7 @@ package fi.karelia.publicservices.data.domain;
  */
 public class Resource {
     
+    private int id;
     private String name;
     private String url;
     private SchedulingType schedulingType;
@@ -74,5 +75,19 @@ public class Resource {
      */
     public void setSchedulingInterval(Long schedulingInterval) {
         this.schedulingInterval = schedulingInterval;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 }

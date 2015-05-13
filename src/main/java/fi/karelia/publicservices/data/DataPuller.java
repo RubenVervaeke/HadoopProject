@@ -6,6 +6,7 @@
 package fi.karelia.publicservices.data;
 
 import fi.karelia.publicservices.data.domain.City;
+import fi.karelia.publicservices.data.domain.Resource;
 import fi.karelia.publicservices.mapper.TrafficLightMapper;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,11 +25,18 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  */
 public class DataPuller {
     
-    public static List<City> pullAll() {
+    private boolean processed;
+    
+    public DataPuller() {
+        processed = true;
+    }
+    
+    public List<City> pullAll() {
         return new ArrayList<City>();
     }
     
-    public static void pull() {
+    public void pull(Resource resource) {
+        processed = false;
 //        try {
 //            Job job = new Job();
 //            job.setJobName("Trafficlightmapping");
@@ -46,5 +54,13 @@ public class DataPuller {
 //            System.out.println("DataPuller error: " + ex.getMessage());
 //            Logger.getLogger(DataPuller.class.getName()).log(Level.SEVERE, null, ex);
 //        }
+        processed = true;
+    }
+
+    /**
+     * @return the processed
+     */
+    public boolean isProcessed() {
+        return processed;
     }
 }
