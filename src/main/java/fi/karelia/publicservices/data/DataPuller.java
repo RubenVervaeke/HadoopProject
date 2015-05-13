@@ -22,22 +22,22 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class DataPuller {
     
     public void pull() {
-        try {
-            Job job = new Job();
-            job.setJobName("Trafficlightmapping");
-            
-            FileInputFormat.addInputPath(job, new Path("Example.csv"));
-            FileOutputFormat.setOutputPath(job, new Path("Output"));
-            
-            job.setMapperClass(TrafficLightMapper.class);
-            
-            job.setOutputKeyClass(Text.class);
-            job.setOutputValueClass(Text.class);
-            
-            job.submit();
-        } catch (IOException | InterruptedException | ClassNotFoundException ex) {
-            System.out.println("DataPuller error: " + ex.getMessage());
-            Logger.getLogger(DataPuller.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            Job job = new Job();
+//            job.setJobName("Trafficlightmapping");
+//            
+//            FileInputFormat.addInputPath(job, new Path("Example.csv"));
+//            FileOutputFormat.setOutputPath(job, new Path("Output"));
+//                     
+//            job.setMapperClass(TrafficLightMapper.class);
+//            
+//            job.setOutputKeyClass(Text.class);
+//            job.setOutputValueClass(Text.class);
+//            
+//            job.submit();
+//        } catch (IOException | InterruptedException | ClassNotFoundException ex) {
+//            System.out.println("DataPuller error: " + ex.getMessage());
+//            Logger.getLogger(DataPuller.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 }

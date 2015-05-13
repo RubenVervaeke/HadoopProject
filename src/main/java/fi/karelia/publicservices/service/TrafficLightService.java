@@ -55,9 +55,10 @@ public class TrafficLightService {
     }
 
     @PUT
+    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(TrafficLight entity) {
+    public Response create(@PathParam("id") String id, TrafficLight entity) {
         TrafficLight resTL = tlBLL.add(entity);
         return Response.status(Status.CREATED).entity(resTL).build();
     }
