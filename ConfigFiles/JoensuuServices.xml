@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<service>
+		<name>TrafficLights</name>
+		<resources>
+			<resource>
+				<name>Lights</name>
+				<datalocation>Lights.xsl</datalocation>
+				<scheduling>
+					<type>interval</type>
+					<interval>604800000</interval>
+				</scheduling>
+			</resource>
+			<resource>
+				<name>Bridge</name>
+				<datalocation>Bridges.xsl</datalocation>
+				<scheduling>
+					<type>interval</type>
+					<interval>604800000</interval>
+				</scheduling>
+			</resource>
+		</resources>
+	</service>
+</services>
