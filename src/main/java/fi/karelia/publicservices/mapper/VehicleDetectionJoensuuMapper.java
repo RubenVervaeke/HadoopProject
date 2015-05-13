@@ -11,28 +11,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 /**
  *
  * @author hadoop
  */
-public class VehicleDetectionJoensuuMapper extends Mapper<NullWritable, BytesWritable, NullWritable, NullWritable> {
+public class VehicleDetectionJoensuuMapper extends Mapper<NullWritable, BytesWritable, NullWritable, Text> {
 
     @Override
     protected void map(NullWritable key, BytesWritable value, Context context) throws IOException, InterruptedException {
         InputStream is = new ByteArrayInputStream(value.getBytes());
-        try {
-            SpreadSheetParser parser = new SpreadSheetParser(is);
-            
-        } catch (IOException ex) {
-            
-        }
+        SpreadSheetParser parser = new SpreadSheetParser(is);
+        context.write(key, new Text(parser.getParsedSpreadSheet()));
     }
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
