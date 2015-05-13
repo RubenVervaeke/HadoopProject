@@ -14,7 +14,6 @@ import org.w3c.dom.Element;
 import java.io.File;
 import fi.karelia.publicservices.data.domain.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,19 +21,28 @@ import java.util.List;
  * @author Jonas
  */
 public class XMLReader {
-    public static void main(String argv[]) {
-        getCity("Joensuu");
+    
+    private static volatile XMLReader reader = null;
+    
+    private XMLReader() {}
+    
+    public static XMLReader getInstance() {
+        if (reader == null) {
+            synchronized(XMLReader.class) {
+                if (reader == null) {
+                    reader = new XMLReader();
+                }
+            }
+        }
+        return reader;
     }
 
-    public City getCity(String pFileName) {
-        return new City();
-    
-    public static String[] getCityFiles()
+    public String[] getCityNames()
     {
         String[] cities = null;
         try {
             
-            File fXmlFile = new File("/Users/Jonas/Dropbox/KATHO/Derde Jaar/FINLAND/Thesis/XML files/cities.xml");
+            File fXmlFile = new File("ConfigFiles/cities.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
@@ -50,7 +58,7 @@ public class XMLReader {
                 if (nNode.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element eElement = (Element) nNode;
-                    cities[temp] = eElement.getElementsByTagName("file").item(0).getTextContent();
+                    cities[temp] = eElement.getElementsByTagName("name").item(0).getTextContent();
                 }
             }
         } catch (Exception e) {
@@ -59,11 +67,11 @@ public class XMLReader {
         return cities;
     }
     
-    public static City getCity(String pCityName){
+    public City getCity(String pCityName){
         City tmpCity = new City();
         try {
             // Open the desired XML file and load it into an XML object.
-            File fXmlFile = new File("/Users/Jonas/Dropbox/KATHO/Derde Jaar/FINLAND/Thesis/XML files/" + pCityName + "Services.xml");
+            File fXmlFile = new File("ConfigFiles/" + pCityName + "Services.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
@@ -104,15 +112,15 @@ public class XMLReader {
                         if(tempNode.getNodeType() == Node.ELEMENT_NODE)
                         {
                             Element tempElement = (Element) tempNode;
+                            tmpResource.setId(Integer.valueOf(tempElement.getElementsByTagName("id").item(0).getTextContent()));
                             tmpResource.setName(tempElement.getElementsByTagName("name").item(0).getTextContent());
                             tmpResource.setUrl(tempElement.getElementsByTagName("datalocation").item(0).getTextContent());
-                            tmpResource.setSchedulingType(SchedulingType.valueOf(tempElement.getElementsByTagName("interval").item(0).getTextContent()));
-                            tmpResource.setSchedulingInterval(Long.valueOf(tempElement.getElementsByTagName("name").item(0).getTextContent()));     
+                            tmpResource.setSchedulingType(SchedulingType.valueOf(tempElement.getElementsByTagName("type").item(0).getTextContent()));
+                            tmpResource.setSchedulingInterval(Long.valueOf(tempElement.getElementsByTagName("interval").item(0).getTextContent()));     
                         }
                         rscList.add(tmpResource);
                     }
-                    tmpService.setResources(rscList);
-//                    
+                    tmpService.setResources(rscList);                    
                 }
                 cityServices.add(tmpService);
             }

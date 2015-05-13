@@ -40,7 +40,7 @@ public class DataScheduler {
             public void run() {
                 // Fetch modified xml file data
                 XMLReader r = XMLReader.getInstance();
-                for (String city :r.getCityFiles()) {
+                for (String city :r.getCityNames()) {
                     try {
                         updateCitySchedule(r.getCity(city));
                     } catch (HadoopException ex) {

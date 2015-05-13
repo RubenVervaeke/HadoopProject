@@ -35,6 +35,7 @@ public class DataPullTask implements RunnableScheduledFuture {
     @Override
     public void run() {
         startTime = System.currentTimeMillis();
+        System.out.println("Start running task with resource id: " + resource.getId());
         puller = new DataPuller();
         puller.pull(getResource());
     }

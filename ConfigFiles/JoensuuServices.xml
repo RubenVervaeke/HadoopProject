@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services>
-	<service>
-		<name>TrafficLights</name>
-		<resources>
-			<resource>
-				<name>Lights</name>
-				<datalocation>Lights.xsl</datalocation>
-				<scheduling>
-					<type>interval</type>
-					<interval>604800000</interval>
-				</scheduling>
-			</resource>
-			<resource>
-				<name>Bridge</name>
-				<datalocation>Bridges.xsl</datalocation>
-				<scheduling>
-					<type>interval</type>
-					<interval>604800000</interval>
-				</scheduling>
-			</resource>
-		</resources>
-	</service>
+    <service>
+        <name>TrafficLights</name>
+        <resources>
+            <resource>
+                <id>1</id>
+                <name>101 - 2015-03-02.xls</name>
+                <datalocation>data</datalocation>
+                <scheduling>
+                    <type>INTERVAL_UPDATE</type>
+                    <interval>5000</interval>
+                </scheduling>
+            </resource>
+            <resource>
+                <id>2</id>
+                <name>102 - 2015-03-02.xls</name>
+                <datalocation>data</datalocation>
+                <scheduling>
+                    <type>INTERVAL_UPDATE</type>
+                    <interval>10000</interval>
+                </scheduling>
+            </resource>
+        </resources>
+    </service>
 </services>
