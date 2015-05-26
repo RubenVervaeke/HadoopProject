@@ -8,7 +8,7 @@
                 <name>101 - 2015-03-02.xls</name>
                 <datalocation>data</datalocation>
                 <scheduling>
-                    <type>INTERVAL_UPDATE</type>
+                    <type>INTERVAL</type>
                     <interval>5000</interval>
                 </scheduling>
             </resource>
@@ -17,7 +17,7 @@
                 <name>102 - 2015-03-02.xls</name>
                 <datalocation>data</datalocation>
                 <scheduling>
-                    <type>INTERVAL_UPDATE</type>
+                    <type>INTERVAL</type>
                     <interval>10000</interval>
                 </scheduling>
             </resource>

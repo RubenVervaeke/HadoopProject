@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import java.io.File;
 import fi.karelia.publicservices.data.domain.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,11 +38,10 @@ public class XMLReader {
         return reader;
     }
 
-    public String[] getCityNames()
+    public List<City> getAllCities()
     {
-        String[] cities = null;
+        List<City> cities = new LinkedList();
         try {
-            
             File fXmlFile = new File("ConfigFiles/cities.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -50,7 +50,8 @@ public class XMLReader {
             doc.getDocumentElement().normalize();
             
             NodeList nList = doc.getElementsByTagName("city");
-            cities = new String[nList.getLength()];
+            //cities = new String[nList.getLength()];
+            
             
             for (int temp = 0; temp < nList.getLength(); temp++)
             {
@@ -58,7 +59,10 @@ public class XMLReader {
                 if (nNode.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element eElement = (Element) nNode;
-                    cities[temp] = eElement.getElementsByTagName("name").item(0).getTextContent();
+                    City tempCity = new City();
+                    tempCity.setName(eElement.getElementsByTagName("name").item(0).getTextContent());
+                    addServicesToCity(tempCity);
+                    cities.add(tempCity);
                 }
             }
         } catch (Exception e) {
@@ -67,19 +71,15 @@ public class XMLReader {
         return cities;
     }
     
-    public City getCity(String pCityName){
-        City tmpCity = new City();
+    private City addServicesToCity(City pCity){
         try {
             // Open the desired XML file and load it into an XML object.
-            File fXmlFile = new File("ConfigFiles/" + pCityName + "Services.xml");
+            File fXmlFile = new File("ConfigFiles/" + pCity.getName() + "Services.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
             
             doc.getDocumentElement().normalize();
-            
-            // Set the name of the city.
-            tmpCity.setName(pCityName);
             
             // Contain the services of a city in a list.
             List<Service> cityServices = new ArrayList();
@@ -124,11 +124,11 @@ public class XMLReader {
                 }
                 cityServices.add(tmpService);
             }
-            tmpCity.setServices(cityServices);
+            pCity.setServices(cityServices);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return tmpCity;
+        return pCity;
     }
 }

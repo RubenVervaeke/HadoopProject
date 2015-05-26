@@ -10,5 +10,5 @@ package fi.karelia.publicservices.data.domain;
  * @author hadoop
  */
 public enum SchedulingType {
-    INITIAL, INTERVAL, INTERVAL_UPDATE;
+    INITIAL, INTERVAL;
 }

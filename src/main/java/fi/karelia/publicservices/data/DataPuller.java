@@ -31,10 +31,18 @@ public class DataPuller {
         processed = true;
     }
     
+    /**
+     * Retrieve all of the cities which are in the system.
+     * @return A list of the cities.
+     */
     public List<City> pullAll() {
         return new ArrayList<City>();
     }
     
+    /**
+    * The pull method which pulls a specific resource.
+    * @param resource The specific resource to pull.
+    */
     public void pull(Resource resource) {
         processed = false;
 //        try {
