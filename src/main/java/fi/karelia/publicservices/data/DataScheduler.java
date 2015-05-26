@@ -103,7 +103,7 @@ public class DataScheduler {
                 // Loop through our scheduled resources to check if the current one
                 // is running
                 for (Runnable task : dataExecutor.getQueue()) {
-                    DataPullTask dpt = (DataPullTask) task;
+                    DataScheduledTask dpt = (DataScheduledTask) task;
                     if (dpt == null) {
                         throw new HadoopException("Wrong task type assigned");
                     }
@@ -118,7 +118,7 @@ public class DataScheduler {
                 // Check if the resource is a new resource
                 if (!present) {
                     // Add new task to the pool
-                    DataPullTask dpt = new DataPullTask(r);
+                    DataScheduledTask dpt = new DataScheduledTask(r);
                     dataExecutor.scheduleAtFixedRate(dpt, 0, r.getSchedulingInterval(), TimeUnit.MILLISECONDS);
                 }
             }
@@ -126,7 +126,7 @@ public class DataScheduler {
 
         // Loop through all scheduled resources to check if there are deleted resources
         for (Runnable task : dataExecutor.getQueue()) {
-            DataPullTask dpt = (DataPullTask) task;
+            DataScheduledTask dpt = (DataScheduledTask) task;
             boolean deleted = true;
             for (Service s : c.getServices()) {
                 for (Resource r : s.getResources()) {

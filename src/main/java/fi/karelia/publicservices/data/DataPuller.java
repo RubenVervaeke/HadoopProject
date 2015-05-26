@@ -5,19 +5,16 @@
  */
 package fi.karelia.publicservices.data;
 
-import fi.karelia.publicservices.data.domain.City;
 import fi.karelia.publicservices.data.domain.Resource;
-import fi.karelia.publicservices.mapper.TrafficLightMapper;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 /**
  *
@@ -25,6 +22,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  */
 public class DataPuller {
     
+    private ResponseHandler<String> responseHandler;
     private boolean processed;
     
     public DataPuller() {
@@ -32,36 +30,37 @@ public class DataPuller {
     }
     
     /**
-     * Retrieve all of the cities which are in the system.
-     * @return A list of the cities.
-     */
-    public List<City> pullAll() {
-        return new ArrayList<City>();
-    }
-    
-    /**
     * The pull method which pulls a specific resource.
     * @param resource The specific resource to pull.
     */
-    public void pull(Resource resource) {
+    public void pull(Resource resource) throws IOException {
         processed = false;
-//        try {
-//            Job job = new Job();
-//            job.setJobName("Trafficlightmapping");
-//            
-//            FileInputFormat.addInputPath(job, new Path("Example.csv"));
-//            FileOutputFormat.setOutputPath(job, new Path("Output"));
-//                     
-//            job.setMapperClass(TrafficLightMapper.class);
-//            
-//            job.setOutputKeyClass(Text.class);
-//            job.setOutputValueClass(Text.class);
-//            
-//            job.submit();
-//        } catch (IOException | InterruptedException | ClassNotFoundException ex) {
-//            System.out.println("DataPuller error: " + ex.getMessage());
-//            Logger.getLogger(DataPuller.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        final String url = resource.getUrl();
+        
+        try {
+            HttpGet httpGet = new HttpGet(url);
+            System.out.println("Executing request " + httpGet.getRequestLine());
+            
+            responseHandler = new ResponseHandler<String>() {
+                @Override
+                public String handleResponse(HttpResponse hr) throws ClientProtocolException, IOException {
+                    int status = hr.getStatusLine().getStatusCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = hr.getEntity();
+                        return entity != null ? EntityUtils.toString(entity) : null;
+                    } else {
+                        throw new ClientProtocolException("Unexpected reponse for resource pull with url: " + url + ". Got response code: " + status);
+                    }
+                }
+            };
+           String responseBody = httpClient.execute(httpGet, responseHandler);
+            System.out.println(responseBody);
+        } finally {
+            httpClient.close();
+        }
+        
         processed = true;
     }
 

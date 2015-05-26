@@ -7,16 +7,19 @@ package fi.karelia.publicservices.data;
 
 import fi.karelia.publicservices.data.domain.Resource;
 import fi.karelia.publicservices.data.domain.SchedulingType;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author hadoop
  */
-public class DataPullTask implements RunnableScheduledFuture {
+public class DataScheduledTask implements RunnableScheduledFuture {
 
     private Resource resource;
     private DataPuller puller;
@@ -24,7 +27,7 @@ public class DataPullTask implements RunnableScheduledFuture {
     private boolean cancelled;
     private long startTime;
     
-    public DataPullTask(Resource resource) {
+    public DataScheduledTask(Resource resource) {
         this.resource = resource;
         cancelled = false;
         running = false;
@@ -37,12 +40,17 @@ public class DataPullTask implements RunnableScheduledFuture {
 
     @Override
     public void run() {
-        running = true;
-        startTime = System.currentTimeMillis();
-        System.out.println("Start running task with resource id: " + resource.getId());
-        puller = new DataPuller();
-        puller.pull(getResource());
-        running = false;
+        try {
+            running = true;
+            startTime = System.currentTimeMillis();
+            System.out.println("Start running task with resource id: " + resource.getId());
+            puller = new DataPuller();
+            puller.pull(getResource());
+            puller = null;
+            running = false;
+        } catch (IOException ex) {
+            Logger.getLogger(DataScheduledTask.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
