@@ -15,6 +15,7 @@ public class City {
     
     private String name;
     private String zipcode;
+    private String fileName;
     
     private List<Service> services;
     
@@ -35,7 +36,7 @@ public class City {
     public void setName(String name) {
         this.name = name;
     }
-
+    
     /**
      * @return the zipcode
      */
@@ -62,6 +63,20 @@ public class City {
      */
     public void setServices(List<Service> services) {
         this.services = services;
+    }
+
+    /**
+     * @return the fileName
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * @param fileName the fileName to set
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
     
     
