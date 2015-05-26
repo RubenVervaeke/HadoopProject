@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cities>
-	<city>
-		<name>Joensuu</name>
-		<file>JoensuuServices.xml</file>
-	</city>
-	<city>
-		<name>Helsinki</name>
-		<file>HelsinkiServices.xml</file>
-	</city>
+    <city>
+        <name>Joensuu</name>
+        <file>JoensuuServices.xml</file>
+    </city>
+    <city>
+        <name>Helsinki</name>
+        <file>HelsinkiServices.xml</file>
+    </city>
 </cities>
