@@ -21,10 +21,13 @@ public class DataPullTask implements RunnableScheduledFuture {
     private Resource resource;
     private DataPuller puller;
     private boolean running;
+    private boolean cancelled;
     private long startTime;
     
     public DataPullTask(Resource resource) {
         this.resource = resource;
+        cancelled = false;
+        running = false;
     }
     
     @Override
@@ -34,25 +37,30 @@ public class DataPullTask implements RunnableScheduledFuture {
 
     @Override
     public void run() {
+        running = true;
         startTime = System.currentTimeMillis();
         System.out.println("Start running task with resource id: " + resource.getId());
         puller = new DataPuller();
         puller.pull(getResource());
+        running = false;
     }
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        return puller.isProcessed();
+        if (puller.isProcessed()) {
+            cancelled = true;
+        }
+        return cancelled;
     }
 
     @Override
     public boolean isCancelled() {
-        return !running;
+        return cancelled;
     }
 
     @Override
     public boolean isDone() {
-        return false;
+        return !running;
     }
 
     @Override
@@ -87,5 +95,6 @@ public class DataPullTask implements RunnableScheduledFuture {
      */
     public void setResource(Resource resource) {
         this.resource = resource;
+        
     }
 }
