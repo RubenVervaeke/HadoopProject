@@ -10,6 +10,7 @@ import fi.karelia.publicservices.data.domain.Resource;
 import fi.karelia.publicservices.data.domain.Service;
 import fi.karelia.publicservices.exception.HadoopException;
 import fi.karelia.publicservices.util.XMLReader;
+import java.io.File;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,6 +19,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.net.ntp.TimeStamp;
 
 /**
  *
@@ -27,8 +29,9 @@ public class DataScheduler {
 
     private static volatile DataScheduler dataScheduler = null;
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private final ScheduledThreadPoolExecutor dataExecutor = new ScheduledThreadPoolExecutor(1000);
+    
     private final Runnable mainTask;
     private ScheduledFuture<?> mainTaskHandle;
 
@@ -40,9 +43,9 @@ public class DataScheduler {
             public void run() {
                 // Fetch modified xml file data
                 XMLReader r = XMLReader.getInstance();
-                for (String city :r.getCityNames()) {
+                for (City city :r.getAllCities()) {
                     try {
-                        updateCitySchedule(r.getCity(city));
+                        updateCitySchedule(city);
                     } catch (HadoopException ex) {
                         Logger.getLogger(DataScheduler.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -64,10 +67,13 @@ public class DataScheduler {
 
     public void initialize() {
         // Start the main task to pull all metadata from xml config files
-        mainTaskHandle = scheduler.scheduleAtFixedRate(mainTask, 30000, 86400000, TimeUnit.MILLISECONDS);
+        mainTaskHandle = executorService.scheduleAtFixedRate(mainTask, 30000, 86400000, TimeUnit.MILLISECONDS);
     }
     
     public void updateCitySchedule(City c) throws HadoopException {
+        // Check if city file has been modified
+        File f = new File();
+        
         for (Service s: c.getServices()) {
             for (Resource r: s.getResources()) {
                 boolean present = false;
