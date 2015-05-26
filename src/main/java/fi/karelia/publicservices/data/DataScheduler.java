@@ -11,16 +11,14 @@ import fi.karelia.publicservices.data.domain.Service;
 import fi.karelia.publicservices.exception.HadoopException;
 import fi.karelia.publicservices.util.XMLReader;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.net.ntp.TimeStamp;
 
 /**
  *
@@ -35,7 +33,7 @@ public class DataScheduler {
 
     private final Runnable mainTask;
 
-    private Map<String, Long> modificationTimestamps;
+    private final Map<String, Long> modificationTimestamps = new HashMap<>();
 
     private DataScheduler() {
         mainTask = new Runnable() {
@@ -80,19 +78,23 @@ public class DataScheduler {
 
         // Check if the file exists
         if (f == null) {
+            System.out.println("City filename does not exist: " + c.getFileName());
             throw new HadoopException("Error while trying to update city schedule for city '" + c.getName() + "': File not found: " + c.getFileName());
         }
 
         // Check if our array of lastModified dates contains the city name,
         // if not we know this is a new added city
+        System.out.println("Checking modification timestamps");
         if (!modificationTimestamps.containsKey(c.getName())) {
             // Add the new last modified date for this city file
+            System.out.println("New value added to modification timestamps for city: " + c.getName());
             modificationTimestamps.put(c.getName(), f.lastModified());
         }
 
         // Check if the lastModified date exceeds the last stored lastModified date
         if (modificationTimestamps.get(c.getName()) > f.lastModified()) {
             // If the file wasn't changed since last time, update nothing
+            System.out.println("Nothing to update for city: " + c.getName());
             return;
         }
 
@@ -109,6 +111,7 @@ public class DataScheduler {
                     }
                     if (dpt.getResource().getId() == r.getId()) {
                         // Update the resource on the DataPullTask
+                        System.out.println("Resource already running: " + dpt.getResource().getName());
                         dpt.setResource(r);
                         present = true;
                         break;
@@ -118,6 +121,7 @@ public class DataScheduler {
                 // Check if the resource is a new resource
                 if (!present) {
                     // Add new task to the pool
+                    System.out.println("Added new scheduled resource:" + r.getName());
                     DataScheduledTask dpt = new DataScheduledTask(r);
                     dataExecutor.scheduleAtFixedRate(dpt, 0, r.getSchedulingInterval(), TimeUnit.MILLISECONDS);
                 }
@@ -139,6 +143,7 @@ public class DataScheduler {
             // If the resource is no longer present in the XML config files,
             // cancel the scheduled resource
             if (deleted) {
+                System.out.println("Deleted scheduled resource:" + dpt.getResource().getName());
                 dpt.cancel(true);
             }
         }
