@@ -61,6 +61,7 @@ public class XMLReader {
                     Element eElement = (Element) nNode;
                     City tempCity = new City();
                     tempCity.setName(eElement.getElementsByTagName("name").item(0).getTextContent());
+                    tempCity.setFileName("ConfigFiles/" + eElement.getElementsByTagName("file").item(0).getTextContent());
                     addServicesToCity(tempCity);
                     cities.add(tempCity);
                 }
@@ -74,7 +75,7 @@ public class XMLReader {
     private City addServicesToCity(City pCity){
         try {
             // Open the desired XML file and load it into an XML object.
-            File fXmlFile = new File("ConfigFiles/" + pCity.getName() + "Services.xml");
+            File fXmlFile = new File(pCity.getFileName());
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
