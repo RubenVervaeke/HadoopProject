@@ -19,4 +19,18 @@ public abstract class Sensor {
     public abstract List<SensorReading> getReadings();
     public abstract void setReadings(List<SensorReading> readings);
     public abstract void addReading(SensorReading reading);
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 }
