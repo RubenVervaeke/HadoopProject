@@ -16,19 +16,29 @@ import java.util.List;
  */
 public class SensorBLL {
     private SensorDAO sDAO;
-
+    
+    /**
+     * This method gets all sensors from the database.
+     * @return List<Sensor> A list of all of the sensors.
+     */
     public List<Sensor> getAll() {
         sDAO = new SensorDAO();
         // Get all traffic lights
         return sDAO.getAll();
     }
 
+    /**
+     * This method finds a sensor by id.
+     * @param id The id to identify the specific sensor.
+     * @return Sensor Return the desired sensor.
+     * @throws ApplicationException 
+     */
     public Sensor findById(int id) throws ApplicationException {
         sDAO = new SensorDAO();
         // Find trafficlight
         Sensor s = sDAO.findById(id);
         if (s == null) {
-            throw new ApplicationException("Trafficlight doesn't exist for id: " + id);
+            throw new ApplicationException("Sensor doesn't exist for id: " + id);
         }
         return s;
     }

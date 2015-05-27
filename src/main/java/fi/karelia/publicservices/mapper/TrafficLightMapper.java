@@ -7,8 +7,6 @@ package fi.karelia.publicservices.mapper;
 
 import fi.karelia.publicservices.bll.TrafficLightBLL;
 import fi.karelia.publicservices.domain.TrafficLight;
-import fi.karelia.publicservices.exception.ApplicationException;
-import fi.karelia.publicservices.exception.DBException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
