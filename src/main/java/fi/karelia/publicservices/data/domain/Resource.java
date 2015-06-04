@@ -16,6 +16,7 @@ public class Resource {
     private String url;
     private SchedulingType schedulingType;
     private Long schedulingInterval;
+    private Class driverType;
     
     public Resource() {
         
@@ -89,5 +90,19 @@ public class Resource {
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+    /**
+     * @return the driverType
+     */
+    public Class getDriverType() {
+        return driverType;
+    }
+
+    /**
+     * @param driverType the driverType to set
+     */
+    public void setDriverType(Class driverType) {
+        this.driverType = driverType;
     }
 }

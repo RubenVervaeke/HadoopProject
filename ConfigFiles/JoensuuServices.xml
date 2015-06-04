@@ -11,6 +11,7 @@
                     <type>INTERVAL</type>
                     <interval>5000</interval>
                 </scheduling>
+                <driverclass>VehicleDetectionJoensuuDriver</driverclass>
             </resource>
             <resource>
                 <id>2</id>
@@ -20,6 +21,7 @@
                     <type>INTERVAL</type>
                     <interval>10000</interval>
                 </scheduling>
+                <driverclass>VehicleDetectionJoensuuDriver</driverclass>
             </resource>
         </resources>
     </service>
