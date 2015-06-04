@@ -13,7 +13,7 @@
                 </scheduling>
                 <driverclass>VehicleDetectionJoensuuDriver</driverclass>
             </resource>
-            <resource>
+            <!-- <resource>
                 <id>2</id>
                 <name>102 - 2015-03-02.xls</name>
                 <datalocation>data</datalocation>
@@ -22,7 +22,7 @@
                     <interval>10000</interval>
                 </scheduling>
                 <driverclass>VehicleDetectionJoensuuDriver</driverclass>
-            </resource>
+            </resource> -->
         </resources>
     </service>
 </services>

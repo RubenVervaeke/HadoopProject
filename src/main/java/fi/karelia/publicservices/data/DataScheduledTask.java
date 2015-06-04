@@ -7,6 +7,7 @@ package fi.karelia.publicservices.data;
 
 import fi.karelia.publicservices.data.domain.Resource;
 import fi.karelia.publicservices.data.domain.SchedulingType;
+import fi.karelia.publicservices.exception.ApplicationException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RunnableScheduledFuture;
@@ -48,7 +49,7 @@ public class DataScheduledTask implements RunnableScheduledFuture {
             puller.pull(getResource());
             puller = null;
             running = false;
-        } catch (IOException ex) {
+        } catch (IOException | ApplicationException ex) {
             Logger.getLogger(DataScheduledTask.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

@@ -5,11 +5,14 @@
  */
 package fi.karelia.publicservices.driver;
 
+import fi.karelia.publicservices.data.domain.Resource;
+import fi.karelia.publicservices.exception.HadoopException;
+
 /**
  *
  * @author ruben
  */
 public interface Driver {
     
-    void execute();
+    void execute(Resource r) throws HadoopException;
 }

@@ -8,6 +8,7 @@ package fi.karelia.publicservices.data;
 import fi.karelia.publicservices.data.domain.Resource;
 import fi.karelia.publicservices.driver.Driver;
 import fi.karelia.publicservices.driver.DriverFactory;
+import fi.karelia.publicservices.exception.ApplicationException;
 import fi.karelia.publicservices.exception.HadoopException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,8 +60,9 @@ public class DataPuller {
      *
      * @param resource The specific resource to pull.
      * @throws java.io.IOException
+     * @throws fi.karelia.publicservices.exception.ApplicationException
      */
-    public void pull(Resource resource) throws IOException {
+    public void pull(Resource resource) throws IOException, ApplicationException {
         processed = false;
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -83,14 +85,13 @@ public class DataPuller {
             Driver driver = DriverFactory.getDriver(resource);
             
             // Execute the driver
-            driver.execute();
+            driver.execute(resource);
             
         } catch (HadoopException ex) {
-            Logger.getLogger(DataPuller.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ApplicationException("Error pulling data from resource: " + resource.getName() + ". Reason: " + ex.getMessage());
         } finally {
             // Close the HTTP client
             httpClient.close();
-            // Delete the temp file from HDFS
         }
 
         processed = true;
