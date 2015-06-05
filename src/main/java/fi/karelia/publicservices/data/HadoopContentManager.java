@@ -11,12 +11,12 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.http.HttpEntity;
 
 /**
  *
@@ -24,24 +24,22 @@ import org.apache.hadoop.fs.Path;
  */
 public class HadoopContentManager {
     
-    public static void writeToHDFS(Resource r, InputStream in) throws HadoopException {
+    public static void writeToHDFS(Resource r, HttpEntity he) throws HadoopException {
      
         try {
             Configuration conf = new Configuration();
-            FileSystem fs = FileSystem.get(conf);
+            FileSystem fs = FileSystem.get(new URI("hdfs://localhost:9000/"), conf);
             
             Path outFile = new Path(r.getName());
             
-            OutputStreamWriter osw = new OutputStreamWriter(fs.create(outFile, true));
-            BufferedWriter br = new BufferedWriter(osw);
+            while (he.isStreaming()) {
+                he.writeTo(fs.create(outFile, true));  
+            }           
             
-            int c;
-            while ((c = in.read()) != -1) {
-                br.write((char) c);
-            }
-            br.close();
         } catch (IOException ex) {
             throw new HadoopException("Error writing to HDFS: " + ex.getMessage());
+        } catch (URISyntaxException ex) {
+            throw new HadoopException("Error in FileSystem URI");
         } 
     }
     

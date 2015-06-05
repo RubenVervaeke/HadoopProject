@@ -13,17 +13,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.io.File;
 import fi.karelia.publicservices.data.domain.*;
+import fi.karelia.publicservices.exception.ApplicationException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  *
- * @author Jonas
+ * @author Jonas, Ruben
  */
 public class XMLReader {
     
     private static volatile XMLReader reader = null;
+    private final String driverPackageName = "fi.karelia.publicservices.driver.";
     
     private XMLReader() {}
     
@@ -50,9 +52,7 @@ public class XMLReader {
             doc.getDocumentElement().normalize();
             
             NodeList nList = doc.getElementsByTagName("city");
-            //cities = new String[nList.getLength()];
-            
-            
+
             for (int temp = 0; temp < nList.getLength(); temp++)
             {
                 Node nNode = nList.item(temp);
@@ -72,7 +72,7 @@ public class XMLReader {
         return cities;
     }
     
-    private City addServicesToCity(City pCity){
+    private City addServicesToCity(City pCity) throws ApplicationException{
         try {
             // Open the desired XML file and load it into an XML object.
             File fXmlFile = new File(pCity.getFileName());
@@ -115,10 +115,10 @@ public class XMLReader {
                             Element tempElement = (Element) tempNode;
                             tmpResource.setId(Integer.valueOf(tempElement.getElementsByTagName("id").item(0).getTextContent()));
                             tmpResource.setName(tempElement.getElementsByTagName("name").item(0).getTextContent());
-                            tmpResource.setUrl(tempElement.getElementsByTagName("datalocation").item(0).getTextContent());
+                            tmpResource.setUrl(tempElement.getElementsByTagName("datalocation").item(0).getTextContent().concat(tmpResource.getName()));
                             tmpResource.setSchedulingType(SchedulingType.valueOf(tempElement.getElementsByTagName("type").item(0).getTextContent()));
                             tmpResource.setSchedulingInterval(Long.valueOf(tempElement.getElementsByTagName("interval").item(0).getTextContent())); 
-                            tmpResource.setDriverType(Class.forName(tempElement.getElementsByTagName("driverclass").item(0).getTextContent()));
+                            tmpResource.setDriverType(Class.forName(driverPackageName + tempElement.getElementsByTagName("driverclass").item(0).getTextContent()));
                         }
                         rscList.add(tmpResource);
                     }
@@ -128,6 +128,8 @@ public class XMLReader {
             }
             pCity.setServices(cityServices);
 
+        } catch (ClassNotFoundException ex) {
+            throw new ApplicationException("No driver class found: " + ex.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }

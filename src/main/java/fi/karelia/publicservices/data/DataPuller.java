@@ -18,11 +18,14 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 /**
  *
@@ -38,13 +41,15 @@ public class DataPuller {
             if (sl.getStatusCode() >= 300) {
                 throw new HttpResponseException(sl.getStatusCode(), sl.getReasonPhrase());
             }
-            
+
             // Check if the response contains a body
             HttpEntity entity = hr.getEntity();
             if (entity == null) {
                 throw new ClientProtocolException("Response contains no content");
             }
-         
+
+            
+            
             return entity;
         }
     };
@@ -65,33 +70,34 @@ public class DataPuller {
     public void pull(Resource resource) throws IOException, ApplicationException {
         processed = false;
 
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpClient httpClient = HttpClients.createDefault();
         final String url = resource.getUrl();
 
         try {
-            HttpGet httpGet = new HttpGet(url);
+            HttpGet httpGet = new HttpGet("http://" + url);
             System.out.println("Executing request " + httpGet.getRequestLine());
-            
+
             // Execute the HTTP request
-            HttpEntity entity = httpClient.execute(httpGet, responseHandler);
-            
-            // Convert the body of the response
-            InputStream in = HttpContentManager.getInputStream(entity);
-            
+            HttpResponse response = httpClient.execute(httpGet);
+            HttpEntity entity = new BufferedHttpEntity(response.getEntity());
+            System.out.println("Request executed");
+
             // Write the file to HDFS
-            HadoopContentManager.writeToHDFS(resource, in);
-            
+            System.out.println("Writing response to HDFS");
+            HadoopContentManager.writeToHDFS(resource, entity);
+
             // Load the driver for the resource
+            System.out.println("Loading Driver for resource");
             Driver driver = DriverFactory.getDriver(resource);
-            
+
             // Execute the driver
+            System.out.println("Executing driver");
             driver.execute(resource);
-            
+
         } catch (HadoopException ex) {
             throw new ApplicationException("Error pulling data from resource: " + resource.getName() + ". Reason: " + ex.getMessage());
         } finally {
             // Close the HTTP client
-            httpClient.close();
         }
 
         processed = true;
