@@ -9,7 +9,7 @@
                 <datalocation>data</datalocation>
                 <scheduling>
                     <type>INTERVAL</type>
-                    <interval>5000</interval>
+                    <interval>60000</interval>
                 </scheduling>
                 <driverclass>VehicleDetectionJoensuuDriver</driverclass>
             </resource>

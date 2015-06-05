@@ -117,7 +117,8 @@ public class XMLReader {
                             tmpResource.setName(tempElement.getElementsByTagName("name").item(0).getTextContent());
                             tmpResource.setUrl(tempElement.getElementsByTagName("datalocation").item(0).getTextContent());
                             tmpResource.setSchedulingType(SchedulingType.valueOf(tempElement.getElementsByTagName("type").item(0).getTextContent()));
-                            tmpResource.setSchedulingInterval(Long.valueOf(tempElement.getElementsByTagName("interval").item(0).getTextContent()));     
+                            tmpResource.setSchedulingInterval(Long.valueOf(tempElement.getElementsByTagName("interval").item(0).getTextContent())); 
+                            tmpResource.setDriverType(Class.forName(tempElement.getElementsByTagName("driverclass").item(0).getTextContent()));
                         }
                         rscList.add(tmpResource);
                     }
