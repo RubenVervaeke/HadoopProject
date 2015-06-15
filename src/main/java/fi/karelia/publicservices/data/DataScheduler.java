@@ -69,7 +69,7 @@ public class DataScheduler {
 
     public void initialize() {
         // Start the main task to pull all metadata from xml config files
-        executorService.scheduleAtFixedRate(mainTask, 30000, 86400000, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(mainTask, 15000, 86400000, TimeUnit.MILLISECONDS);
     }
 
     public void updateModifiedResources(City c) throws HadoopException {

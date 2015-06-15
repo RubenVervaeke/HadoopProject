@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -36,24 +38,22 @@ public class HadoopContentManager {
                 he.writeTo(fs.create(outFile, true));  
             }           
             
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException ex) {
             throw new HadoopException("Error writing to HDFS: " + ex.getMessage());
-        } catch (URISyntaxException ex) {
-            throw new HadoopException("Error in FileSystem URI");
         } 
     }
     
     public static void deleteFromHDFS(String path) throws HadoopException {
         try {
             Configuration conf = new Configuration();
-            FileSystem fs = FileSystem.get(conf);
+            FileSystem fs = FileSystem.get(new URI("hdfs://localhost:9000/"), conf);
             
             Path p = new Path(path);
             if (fs.exists(p)) {
                 fs.delete(p, true);
             }
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException ex) {
             throw new HadoopException("Error deleting from HDFS: " + ex.getMessage());
-        }
+        } 
     } 
 }

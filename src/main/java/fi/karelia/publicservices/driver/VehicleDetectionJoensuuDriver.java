@@ -12,49 +12,43 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.RunJar;
 
 /**
  *
  * @author ruben
  */
-public class VehicleDetectionJoensuuDriver implements Driver {
+public class VehicleDetectionJoensuuDriver extends Driver {
 
     @Override
     public void execute(Resource r) throws HadoopException {
+            
         try {
+            
+            System.out.println("Creating Configuration");
             Configuration config = HBaseConfiguration.create();
+            config.set("fs.defaultFS", "hdfs://localhost:9000");
+            config.set("mapreduce.framework.name", "yarn");
+            // config.set("yarn.resourcemanager.address", "localhost:8032");
+            
+            System.out.println("Creating Job");
             Job job = new Job(config, "Vehicle detection sensor");
             job.setJarByClass(VehicleDetectionJoensuuDriver.class);
-            
+            job.setMapperClass(VehicleDetectionJoensuuMapper.class);
             FileInputFormat.addInputPath(job, new Path(r.getName()));
+            FileOutputFormat.setOutputPath(job, new Path("output"));
             
-            
-//            Scan scan = new Scan();
-//            scan.setCaching(500);
-//            scan.setCacheBlocks(false);
-//            
-//            TableMapReduceUtil.initTableMapperJob("VehicleDetectionReadings", 
-//                    scan, 
-//                    VehicleDetectionJoensuuMapper.class, 
-//                    null, 
-//                    null, 
-//                    job);
-//
-//            job.setNumReduceTasks(0);
-            
+            System.out.println("Executing job");
             boolean b = job.waitForCompletion(true);
             if (!b) {
                 throw new HadoopException("Error executing job for driver: " + this.toString());
             }
             
-        } catch (IOException ex) {
-            throw new HadoopException("Error executing driver: " + this.toString());
-        } catch (InterruptedException | ClassNotFoundException ex) {
-            throw new HadoopException("Error executing job for driver: " + this.toString());
-        }
+        } catch (InterruptedException | ClassNotFoundException | IOException ex) {
+            throw new HadoopException("Error executing driver: " + ex.getMessage());
+        } 
     }
 }

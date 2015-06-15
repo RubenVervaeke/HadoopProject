@@ -9,18 +9,10 @@ import com.aspose.hadoop.core.SpreadSheetParser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
-import org.apache.hadoop.hbase.mapreduce.TableMapper;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.io.ByteWritable;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -35,11 +27,8 @@ public class VehicleDetectionJoensuuMapper extends Mapper<Text, BytesWritable, I
         InputStream is = new ByteArrayInputStream(value.getBytes());
         SpreadSheetParser parser = new SpreadSheetParser(is);
         String content = parser.getParsedSpreadSheet();
-//        
-//        Table t = ConnectionFactory.createConnection().getTable(TableName.valueOf("VehicleDetectionReadings"));
-//        
-//        
         
+        System.out.println("VehicleDetectionJoensuuMapper: Creating PUT");
         Put put = new Put(Bytes.toBytes("TestId"));
         put.add("cf".getBytes(), "TestAtt".getBytes(), content.getBytes());
 //        t.put(put);

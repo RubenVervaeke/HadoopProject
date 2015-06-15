@@ -5,6 +5,7 @@
  */
 package fi.karelia.publicservices.driver;
 
+import fi.karelia.publicservices.data.HadoopContentManager;
 import fi.karelia.publicservices.data.domain.Resource;
 import fi.karelia.publicservices.exception.HadoopException;
 
@@ -12,7 +13,9 @@ import fi.karelia.publicservices.exception.HadoopException;
  *
  * @author ruben
  */
-public interface Driver {
+public abstract class Driver {
     
-    void execute(Resource r) throws HadoopException;
+    public void execute(Resource r) throws HadoopException {
+        HadoopContentManager.deleteFromHDFS("output");
+    };
 }

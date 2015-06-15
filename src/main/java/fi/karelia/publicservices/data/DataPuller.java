@@ -97,7 +97,12 @@ public class DataPuller {
         } catch (HadoopException ex) {
             throw new ApplicationException("Error pulling data from resource: " + resource.getName() + ". Reason: " + ex.getMessage());
         } finally {
-            // Close the HTTP client
+            try {
+                // Close the HTTP client
+                HadoopContentManager.deleteFromHDFS("output");
+            } catch (HadoopException ex) {
+                throw new ApplicationException("Error deleting output from HDFS: " + ex.getMessage());
+            }
         }
 
         processed = true;
