@@ -12,13 +12,20 @@ import fi.karelia.publicservices.exception.HadoopException;
 import fi.karelia.publicservices.util.XMLReader;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jboss.netty.channel.Channels;
 
 /**
  *
@@ -28,38 +35,39 @@ public class DataScheduler {
 
     private static volatile DataScheduler dataScheduler = null;
 
-    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
     private final ScheduledThreadPoolExecutor dataExecutor = new ScheduledThreadPoolExecutor(1000);
 
-    private final Runnable mainTask;
+    private final FutureTask mainTask;
+    private ScheduledFuture<?> future;
 
     private final Map<String, Long> modificationTimestamps = new HashMap<>();
 
     private DataScheduler() {
-        mainTask = new Runnable() {
+        mainTask = new FutureTask(new Callable<Void>() {
             @Override
-            public void run() {
+            public Void call() throws Exception {
                 // Fetch xml file data
                 XMLReader r = XMLReader.getInstance();
-                for (City city : r.getAllCities()) {
-                    try {
-                        // Update modified resources
-                        updateModifiedResources(city);
-                    } catch (HadoopException ex) {
-                        Logger.getLogger(DataScheduler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                List<City> cities = r.getAllCities();
+                for (City city : cities) {
+                    System.out.println("City: " + city.getName());
+                    // Update modified resources
+                    updateModifiedResources(city);
                 }
-
                 // Reschedule modified resources
                 rescheduleModifiedResources();
+                return null;
             }
-        };
+        });
     }
 
-    public static DataScheduler getInstance() {
+    public static DataScheduler
+            getInstance() {
         if (dataScheduler == null) {
             synchronized (DataScheduler.class) {
-                if (dataScheduler == null) {
+                if (dataScheduler
+                        == null) {
                     dataScheduler = new DataScheduler();
                 }
             }
@@ -69,7 +77,22 @@ public class DataScheduler {
 
     public void initialize() {
         // Start the main task to pull all metadata from xml config files
-        executorService.scheduleAtFixedRate(mainTask, 15000, 86400000, TimeUnit.MILLISECONDS);
+        future = executorService.scheduleAtFixedRate(mainTask, 10000, 86400000, TimeUnit.MILLISECONDS);
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    future.get();
+                } catch (InterruptedException | CancellationException ex) {
+                    System.err.println("Error in mainTask: " + ex.getMessage());
+                    System.out.println("Error in mainTask: " + ex.getMessage());
+                } catch (ExecutionException ex) {
+                    System.err.println("Error in maintask: " + ex.getMessage()); 
+                    System.out.println("Error in mainTask: " + ex.getMessage());
+                }
+            }
+        });
     }
 
     public void updateModifiedResources(City c) throws HadoopException {
@@ -139,7 +162,7 @@ public class DataScheduler {
                     }
                 }
             }
-            
+
             // If the resource is no longer present in the XML config files,
             // cancel the scheduled resource
             if (deleted) {
@@ -152,6 +175,5 @@ public class DataScheduler {
     private void rescheduleModifiedResources() {
 
     }
-    
-    
+
 }

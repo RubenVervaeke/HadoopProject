@@ -7,8 +7,6 @@ package fi.karelia.publicservices.data;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,7 +23,7 @@ import org.xml.sax.SAXException;
  */
 public class HttpContentManager {
 
-    public static Document getDocument(HttpEntity he) throws IOException {
+    public Document getDocument(HttpEntity he) throws IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -40,9 +38,7 @@ public class HttpContentManager {
         }
     }
 
-    public static InputStream getInputStream(HttpEntity he) throws IOException {
-        InputStream input = null;
-        input = he.getContent();
-        return input;
+    public InputStream getInputStream(HttpEntity he) throws IOException {
+        return he.getContent();
     }
 }
