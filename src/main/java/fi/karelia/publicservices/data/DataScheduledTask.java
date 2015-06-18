@@ -42,12 +42,14 @@ public class DataScheduledTask implements RunnableScheduledFuture {
     @Override
     public void run() {
         try {
+            if (puller == null) {
+                puller = new DataPuller();
+            }
+            
             running = true;
             startTime = System.currentTimeMillis();
-            System.out.println("Start running task with resource id: " + resource.getId());
-            puller = new DataPuller();
+            System.out.println("Start running task with resource id: " + resource.getId());          
             puller.pull(getResource());
-            puller = null;
             running = false;
         } catch (IOException | ApplicationException ex) {
             Logger.getLogger(DataScheduledTask.class.getName()).log(Level.SEVERE, null, ex);

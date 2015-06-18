@@ -13,25 +13,30 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.io.File;
 import fi.karelia.publicservices.data.domain.*;
-import fi.karelia.publicservices.exception.ApplicationException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author Jonas, Ruben
  */
 public class XMLReader {
-    
+
     private static volatile XMLReader reader = null;
-    private final String driverPackageName = "fi.karelia.publicservices.driver.";
-    
-    private XMLReader() {}
-    
+
+    private XMLReader() {
+    }
+
     public static XMLReader getInstance() {
         if (reader == null) {
-            synchronized(XMLReader.class) {
+            synchronized (XMLReader.class) {
                 if (reader == null) {
                     reader = new XMLReader();
                 }
@@ -40,99 +45,84 @@ public class XMLReader {
         return reader;
     }
 
-    public List<City> getAllCities()
-    {
+    public List<City> getAllCities() throws ParserConfigurationException, SAXException, IOException {
         List<City> cities = new LinkedList();
-        try {
-            File fXmlFile = new File("ConfigFiles/cities.xml");
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-            
-            doc.getDocumentElement().normalize();
-            
-            NodeList nList = doc.getElementsByTagName("city");
 
-            for (int temp = 0; temp < nList.getLength(); temp++)
-            {
-                Node nNode = nList.item(temp);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE)
-                {
-                    Element eElement = (Element) nNode;
-                    City tempCity = new City();
-                    tempCity.setName(eElement.getElementsByTagName("name").item(0).getTextContent());
-                    tempCity.setFileName("ConfigFiles/" + eElement.getElementsByTagName("file").item(0).getTextContent());
-                    addServicesToCity(tempCity);
-                    cities.add(tempCity);
-                }
+        File fXmlFile = new File("ConfigFiles/cities.xml");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(fXmlFile);
+
+        doc.getDocumentElement().normalize();
+
+        NodeList nList = doc.getElementsByTagName("city");
+
+        for (int temp = 0; temp < nList.getLength(); temp++) {
+            Node nNode = nList.item(temp);
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) nNode;
+                City tempCity = new City();
+                tempCity.setName(eElement.getElementsByTagName("name").item(0).getTextContent());
+                tempCity.setFileName("ConfigFiles/" + eElement.getElementsByTagName("file").item(0).getTextContent());
+                addServicesToCity(tempCity);
+                cities.add(tempCity);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return cities;
     }
-    
-    private City addServicesToCity(City pCity) throws ApplicationException{
-        try {
-            // Open the desired XML file and load it into an XML object.
-            File fXmlFile = new File(pCity.getFileName());
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-            
-            doc.getDocumentElement().normalize();
-            
-            // Contain the services of a city in a list.
-            List<Service> cityServices = new ArrayList();
-            
-            // Store all the service nodes.
-            NodeList nList = doc.getElementsByTagName("service");
-            
-            //for each service node.
-            for (int temp = 0; temp < nList.getLength(); temp++)
-            {
-                // Make a new serviceobject.
-                Service tmpService = new Service();
-                List<Resource> rscList = new ArrayList<>();
-                // Get the node of the service.
-                Node nNode = nList.item(temp);
-                
-                if (nNode.getNodeType() == Node.ELEMENT_NODE)
-                {
-                    // Get the element of the node.
-                    Element eElement = (Element) nNode;
-                    
-                    // Get all resource tags under a service.
-                    NodeList resourceList = eElement.getElementsByTagName("resource");
-                    
-                    // Loop over every resource for a service.
-                    for(int temp2 = 0; temp2 < resourceList.getLength(); temp2++)
-                    {
-                        Resource tmpResource = new Resource();
-                        Node tempNode = resourceList.item(temp2);
-                        if(tempNode.getNodeType() == Node.ELEMENT_NODE)
-                        {
-                            Element tempElement = (Element) tempNode;
-                            tmpResource.setId(Integer.valueOf(tempElement.getElementsByTagName("id").item(0).getTextContent()));
-                            tmpResource.setName(tempElement.getElementsByTagName("name").item(0).getTextContent());
-                            tmpResource.setUrl(tempElement.getElementsByTagName("datalocation").item(0).getTextContent().concat(tmpResource.getName()));
-                            tmpResource.setSchedulingType(SchedulingType.valueOf(tempElement.getElementsByTagName("type").item(0).getTextContent()));
-                            tmpResource.setSchedulingInterval(Long.valueOf(tempElement.getElementsByTagName("interval").item(0).getTextContent())); 
-                            tmpResource.setDriverType(Class.forName(driverPackageName + tempElement.getElementsByTagName("driverclass").item(0).getTextContent()));
-                        }
-                        rscList.add(tmpResource);
-                    }
-                    tmpService.setResources(rscList);                    
-                }
-                cityServices.add(tmpService);
-            }
-            pCity.setServices(cityServices);
 
-        } catch (ClassNotFoundException ex) {
-            throw new ApplicationException("No driver class found: " + ex.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
+    private City addServicesToCity(City pCity) throws ParserConfigurationException, SAXException, IOException {
+        // Open the desired XML file and load it into an XML object.
+        File fXmlFile = new File(pCity.getFileName());
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(fXmlFile);
+
+        doc.getDocumentElement().normalize();
+
+        // Contain the services of a city in a list.
+        List<Service> cityServices = new ArrayList();
+
+        // Store all the service nodes.
+        NodeList nList = doc.getElementsByTagName("service");
+
+        //for each service node.
+        for (int temp = 0; temp < nList.getLength(); temp++) {
+            // Make a new serviceobject.
+            Service tmpService = new Service();
+            List<Resource> rscList = new ArrayList<Resource>();
+            // Get the node of the service.
+            Node nNode = nList.item(temp);
+
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                // Get the element of the node.
+                Element eElement = (Element) nNode;
+
+                // Get all resource tags under a service.
+                NodeList resourceList = eElement.getElementsByTagName("resource");
+
+                // Loop over every resource for a service.
+                for (int temp2 = 0; temp2 < resourceList.getLength(); temp2++) {
+                    Resource tmpResource = new Resource();
+                    Node tempNode = resourceList.item(temp2);
+                    if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element tempElement = (Element) tempNode;
+                        tmpResource.setId(Integer.valueOf(tempElement.getElementsByTagName("id").item(0).getTextContent()));
+                        tmpResource.setName(tempElement.getElementsByTagName("name").item(0).getTextContent());
+                        tmpResource.setDriverJarName(tempElement.getElementsByTagName("driverjar").item(0).getTextContent());
+                        tmpResource.setUrl(tempElement.getElementsByTagName("datalocation").item(0).getTextContent().concat(tmpResource.getName()));
+                        tmpResource.setSchedulingType(SchedulingType.valueOf(tempElement.getElementsByTagName("type").item(0).getTextContent()));
+                        tmpResource.setSchedulingInterval(Long.valueOf(tempElement.getElementsByTagName("interval").item(0).getTextContent()));
+                        
+                    }
+                    rscList.add(tmpResource);
+                }
+                tmpService.setResources(rscList);
+            }
+            cityServices.add(tmpService);
         }
+        pCity.setServices(cityServices);
+
         return pCity;
     }
 }

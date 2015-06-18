@@ -7,14 +7,9 @@ package fi.karelia.publicservices.data;
 
 import fi.karelia.publicservices.data.domain.Resource;
 import fi.karelia.publicservices.exception.HadoopException;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -26,7 +21,7 @@ import org.apache.http.HttpEntity;
  */
 public class HadoopContentManager {
     
-    public static void writeToHDFS(Resource r, HttpEntity he) throws HadoopException {
+    public void writeToHDFS(Resource r, HttpEntity he) throws HadoopException {
      
         try {
             Configuration conf = new Configuration();
@@ -43,7 +38,7 @@ public class HadoopContentManager {
         } 
     }
     
-    public static void deleteFromHDFS(String path) throws HadoopException {
+    public void deleteFromHDFS(String path) throws HadoopException {
         try {
             Configuration conf = new Configuration();
             FileSystem fs = FileSystem.get(new URI("hdfs://localhost:9000/"), conf);

@@ -50,6 +50,11 @@
             <version>1.0.1.1</version>
         </dependency>       
         <dependency>
+            <groupId>org.apache.pig</groupId>
+            <artifactId>pig</artifactId>
+            <version>0.14.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.4.1</version>

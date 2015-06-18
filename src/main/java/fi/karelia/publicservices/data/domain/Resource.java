@@ -16,7 +16,7 @@ public class Resource {
     private String url;
     private SchedulingType schedulingType;
     private Long schedulingInterval;
-    private Class driverType;
+    private String driverJarName;
     
     public Resource() {
         
@@ -93,16 +93,16 @@ public class Resource {
     }
 
     /**
-     * @return the driverType
+     * @return the driverJarName
      */
-    public Class getDriverType() {
-        return driverType;
+    public String getDriverJarName() {
+        return driverJarName;
     }
 
     /**
-     * @param driverType the driverType to set
+     * @param driverJarName the driverJarName to set
      */
-    public void setDriverType(Class driverType) {
-        this.driverType = driverType;
+    public void setDriverJarName(String driverJarName) {
+        this.driverJarName = driverJarName;
     }
 }

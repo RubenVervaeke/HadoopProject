@@ -6,14 +6,10 @@
 package fi.karelia.publicservices.data;
 
 import fi.karelia.publicservices.data.domain.Resource;
-import fi.karelia.publicservices.driver.Driver;
-import fi.karelia.publicservices.driver.DriverFactory;
 import fi.karelia.publicservices.exception.ApplicationException;
 import fi.karelia.publicservices.exception.HadoopException;
+import fi.karelia.publicservices.job.JobRunner;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -23,15 +19,16 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 /**
  *
  * @author Ruben
  */
 public class DataPuller {
+
+    private HadoopContentManager contentMgr;
+    private JobRunner jobRunner;
 
     private ResponseHandler<HttpEntity> responseHandler = new ResponseHandler<HttpEntity>() {
         @Override
@@ -48,8 +45,6 @@ public class DataPuller {
                 throw new ClientProtocolException("Response contains no content");
             }
 
-            
-            
             return entity;
         }
     };
@@ -72,6 +67,10 @@ public class DataPuller {
 
         HttpClient httpClient = HttpClients.createDefault();
         final String url = resource.getUrl();
+        contentMgr = new HadoopContentManager();
+        // Load the job
+        System.out.println("Loading job");
+        jobRunner = new JobRunner(resource);
 
         try {
             HttpGet httpGet = new HttpGet("http://" + url);
@@ -84,25 +83,24 @@ public class DataPuller {
 
             // Write the file to HDFS
             System.out.println("Writing response to HDFS");
-            HadoopContentManager.writeToHDFS(resource, entity);
+            contentMgr.writeToHDFS(resource, entity);
 
-            // Load the driver for the resource
-            System.out.println("Loading Driver for resource");
-            Driver driver = DriverFactory.getDriver(resource);
-
-            // Execute the driver
-            System.out.println("Executing driver");
-            driver.execute(resource);
-
+            // Execute the job
+            System.out.println("Executing job");
+            jobRunner.run();
         } catch (HadoopException ex) {
+            System.out.println("Throwing HadoopException" + ex.getMessage());
             throw new ApplicationException("Error pulling data from resource: " + resource.getName() + ". Reason: " + ex.getMessage());
         } finally {
-            try {
-                // Close the HTTP client
-                HadoopContentManager.deleteFromHDFS("output");
-            } catch (HadoopException ex) {
-                throw new ApplicationException("Error deleting output from HDFS: " + ex.getMessage());
-            }
+
+        }
+
+        try {
+            // Close the HTTP client
+            contentMgr.deleteFromHDFS("output");
+        } catch (HadoopException ex) {
+            System.out.println("Throwing HadoopException" + ex.getMessage());
+            throw new ApplicationException("Error deleting output from HDFS: " + ex.getMessage());
         }
 
         processed = true;
