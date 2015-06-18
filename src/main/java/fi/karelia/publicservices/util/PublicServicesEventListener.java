@@ -25,7 +25,7 @@ public class PublicServicesEventListener implements ApplicationEventListener {
             case INITIALIZATION_FINISHED:
                 System.out.println("Application " + ae.getResourceConfig().getApplicationName() + " was initialized.");
                 // Start the data scheduler
-                DataScheduler.getInstance().initialize();
+                
                 break;
             case DESTROY_FINISHED:
                 System.out.println("Application " + ae.getResourceConfig().getApplicationName() + " destroyed.");
