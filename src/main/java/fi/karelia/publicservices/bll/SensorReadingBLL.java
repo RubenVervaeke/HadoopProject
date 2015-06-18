@@ -26,6 +26,7 @@ public class SensorReadingBLL {
      * This method gets all sensorreadings from the database.
      *
      * @return List<SensorReading> A list of all of the sensors.
+     * @throws fi.karelia.publicservices.exception.ApplicationException
      */
     public List<SensorReading> getAllSensorReadings() throws ApplicationException{
         sDAO = new SensorReadingDAO();
@@ -49,16 +50,16 @@ public class SensorReadingBLL {
      * @throws ApplicationException Exception thrown when no reading was found
      * for this combination.
      */
-    public SensorReading findReadingByIdAndTimeStamp(String id, Long Timestamp) throws ApplicationException, DBException {
+    public SensorReading findReadingById(String id) throws ApplicationException {
         sDAO = new SensorReadingDAO();
 
         SensorReading lFoundReading = new SensorReading();
 
         try {
             // Find sensorreading for specified date and id.
-            lFoundReading = sDAO.findReadingByIdAndTimeStamp(id, Timestamp);
+            lFoundReading = sDAO.findReadingById(id);
             if (lFoundReading == null) {
-                throw new ApplicationException("No readings found for requested id on requested moment: " + id + Timestamp);
+                throw new ApplicationException("No readings found for requested id on requested moment: " + id);
             }
         } catch(DBException ex) {
             Logger.getLogger(SensorReadingBLL.class.getName()).log(Level.SEVERE, null, ex);
@@ -73,14 +74,14 @@ public class SensorReadingBLL {
      * @return List<SensorReadings> Return the readings from the desired sensor.
      * @throws ApplicationException
      */
-    public List<SensorReading> findReadingsById(String id) throws ApplicationException {
+    public List<SensorReading> findReadingsBySensorId(String id) throws ApplicationException {
         sDAO = new SensorReadingDAO();
 
         List<SensorReading> lFoundReadings = new ArrayList();
 
         try {
             // Find readings from specified id.
-            lFoundReadings = sDAO.findReadingsById(id);
+            lFoundReadings = sDAO.findReadingsBySensorId(id);
 
             if (lFoundReadings.isEmpty()) {
                 throw new ApplicationException("No readings found for id: " + id);

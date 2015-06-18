@@ -13,7 +13,7 @@ import java.util.List;
  */
 public abstract class Sensor {
     
-    private int id;
+    private String id;
     protected List<SensorReading> readings;
     
     public abstract List<SensorReading> getReadings();
@@ -23,14 +23,14 @@ public abstract class Sensor {
     /**
      * @return the id
      */
-    public int getId() {
+    public String getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

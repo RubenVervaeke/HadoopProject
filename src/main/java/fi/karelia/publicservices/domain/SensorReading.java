@@ -11,6 +11,7 @@ package fi.karelia.publicservices.domain;
  */
 public class SensorReading {
     
+    private String id;
     private Long timestamp;
     private Object value;
     
@@ -40,5 +41,19 @@ public class SensorReading {
      */
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 }
