@@ -49,9 +49,6 @@ public class SensorService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
         SensorReadingBLL myBLL = new SensorReadingBLL();
-        try{
-            myBLL.getAllSensorReadings();
-        } catch (ApplicationException ex){}
         List<SensorReading> list = null;
         try {
             list = sBLL.getAllSensorReadings();
