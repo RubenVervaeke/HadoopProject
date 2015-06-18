@@ -5,10 +5,12 @@
  */
 package fi.karelia.publicservices.service;
 
-import fi.karelia.publicservices.bll.SensorBLL;
-import fi.karelia.publicservices.domain.Sensor;
+import fi.karelia.publicservices.bll.SensorReadingBLL;
+import fi.karelia.publicservices.domain.SensorReading;
 import fi.karelia.publicservices.exception.ApplicationException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,20 +25,20 @@ import javax.ws.rs.core.Response.Status;
  */
 @Path("/sensor")
 public class SensorService {
-    
-    private final SensorBLL sBLL;
+
+    private final SensorReadingBLL sBLL;
 
     public SensorService() {
-        sBLL = new SensorBLL();
+        sBLL = new SensorReadingBLL();
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findById(@PathParam("id") int id) {
-        Sensor s = null;
+    public Response findById(@PathParam("id") String id) {
+        List<SensorReading> s = null;
         try {
-            s = sBLL.findById(id);
+            s = sBLL.findReadingsById(id);
         } catch (ApplicationException ex) {
             return Response.status(Status.NOT_FOUND).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
@@ -46,7 +48,16 @@ public class SensorService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
-        List<Sensor> list = sBLL.getAll();
+        SensorReadingBLL myBLL = new SensorReadingBLL();
+        try{
+            myBLL.getAllSensorReadings();
+        } catch (ApplicationException ex){}
+        List<SensorReading> list = null;
+        try {
+            list = sBLL.getAllSensorReadings();
+        } catch (ApplicationException ex) {
+            return Response.status(Status.NOT_FOUND).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
+        }
         return Response.ok(list).build();
     }
 }

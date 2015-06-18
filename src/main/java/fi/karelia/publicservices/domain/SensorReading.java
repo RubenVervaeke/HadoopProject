@@ -9,10 +9,36 @@ package fi.karelia.publicservices.domain;
  *
  * @author hadoop
  */
-public abstract class SensorReading {
+public class SensorReading {
     
     private Long timestamp;
+    private Object value;
     
-    public abstract Object getValue();
-    public abstract void setValue(Object value);
+    /**
+     * @return the timestamp
+     */
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * @param timestamp the timestamp to set
+     */
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    /**
+     * @return the value
+     */
+    public Object getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(Object value) {
+        this.value = value;
+    }
 }
